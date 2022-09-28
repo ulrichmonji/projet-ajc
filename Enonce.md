@@ -6,21 +6,17 @@
   - Sous **VScode**, Installer le plugin **Docker** et visualisez les objets docker
 
   
-  
-
 # Partie 2 : Harbor + Trivy
 Il est question d'installer **harbor** et de configurer le scanner **trivy**.
 
-***Vous pouvez travailler en root directement***
+ > :warning: ***Vous pouvez travailler en tant qu'utilisateur root directement***
 
   
-
 ### 1 - Téléchargement et extraction de l'archive
 
 	wget https://github.com/goharbor/harbor/releases/download/v2.0.0/harbor-online-installer-v2.0.0.tgz
 	tar xvf harbor-online-installer-v2.0.0.tgz
 
-  
 
 ### 2 - Génération des certificats
 
@@ -66,7 +62,6 @@ Il est question d'installer **harbor** et de configurer le scanner **trivy**.
 	-in harbor-registry.com.csr \
 	-out harbor-registry.com.crt
 
-  
 
 #### g - Dépôt du certificat pour harbort
 
@@ -77,11 +72,11 @@ Il est question d'installer **harbor** et de configurer le scanner **trivy**.
 
 #### h - configuration des certificats pour docker
 
-	mkdir -p /etc/docker/certs.d/harbor-registry.com/ /etc/docker/certs.d/yourdomain.com/
+	mkdir -p /etc/docker/certs.d/harbor-registry.com/
 	openssl x509 -inform PEM -in harbor-registry.com.crt -out harbor-registry.com.cert
 	cp harbor-registry.com.cert /etc/docker/certs.d/harbor-registry.com/
 	cp harbor-registry.com.key /etc/docker/certs.d/harbor-registry.com/
-	cp ca.crt /etc/docker/certs.d/yourdomain.com/
+	cp ca.crt /etc/docker/certs.d/harbor-registry.com/
   
 
 #### i - Redémarrage de docker
@@ -97,7 +92,7 @@ Dans le dossier **harbor** téléchargé, il faut créer un fichier de configura
 	cp harbor.yml.tmpl harbor.yml
 Dans ce fichier, il faudra changer les lignes suivantes comme suit :
 	
-	hostname: harbor-registry
+	hostname: harbor-registry.com
 	# https related config
 	https:
 	  # https port for harbor, default is 443
@@ -164,15 +159,25 @@ Il faut se déplacer dans le dossier harbor d'insallation.
 	SCANNER_TRIVY_DEBUG_MODE=false
 	EOF
 
-#### b - Création du docker-compose
-Dans les sources, récupérer le fichier **docker-compose.override.yml** et le déposer dans le dossier harbor
+#### b - Création et lancement du docker-compose
+
+Dans les sources, récupérer le fichier **docker-compose.override.yml** et le déposer dans le dossier harbor. Créer aussi les réperoires suivants : */home/ec2-user/voting-app/harbor/data/trivy-adapter/trivy* et */home/ec2-user/voting-app/harbor/data/trivy-adapter/reports*
+		
+	
+	mkdir -p /home/ec2-user/voting-app/harbor/data/trivy-adapter/trivy /home/ec2-user/voting-app/harbor/data/trivy-adapter/reports
+
+Enfin, Lancez le docker compose
+
+	docker-compose up -d
   
-#### c - Terminer la configuration  dans l'IHM harbor en rajoutant un nouveau scanner
+#### c - Ajout du scanner dans l'IHM harbor 
+
+Il faut à présent terminer la configuration dans l'IHM harbor en rajoutant un nouveau scanner. Il faut aller dans **Interrogation Services > New Scanner**
+
+- *Name* : **my-trvy-scanner**
+- *Endpoint* : **http://trivy-adapter:8080**
 
   
-
-  
-
 # Partie 3 : Grafana + Prometheus
 
 ### 1 - Déployer la stack prometheus/Grafana sur docker.
@@ -191,13 +196,13 @@ Ne pas oublier de redémarrer docker
 
 	cat > /etc/docker/daemon.json <<-EOF
 	{
-	"metrics-addr" : "<YOUR IP>:9323",
-	"experimental" : true
+		"metrics-addr" : "<YOUR IP>:9323",
+		"experimental" : true
 	}
 	EOF
 	sudo systemctl restart docker
 
-  Des métriques devraient être disponible à cette url : httpp://<YOUR IP:9393/metrics>
+  Des métriques devraient être disponibles à cette url : http://<YOUR IP:9393/metrics>
 
   
 
@@ -208,7 +213,7 @@ On doit rajouter ceci :
 
 	- job_name: "Votre Job Docker"
 	  static_configs:
-	  	- targets: ["<YOUR  IP:9323"]
+	  	- targets: ["<YOUR  IP>:9323"]
 
   
 A ce stade une nouvelle target devrait apparaître dans l'interface prometheus
@@ -219,7 +224,7 @@ A ce stade une nouvelle target devrait apparaître dans l'interface prometheus
 Ce dashboard affichera les métriques suivantes (avec les requêttes adéquates) : 
 - Nombre de container **en cours d'exécution**
 			 
-			 engine_daemon_container_states_containers{state="running"}
+		engine_daemon_container_states_containers{state="running"}
 
 - Nombre de container **arrêté**
 

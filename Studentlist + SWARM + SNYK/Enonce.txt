@@ -1,0 +1,41 @@
+Partie 1 : Déploiement d'une application conteneurisée sur docker StanAlone
+Cette partie vous permettra de reviser  les éléments suivants dans docker: 
+    - Le Dockerfile
+    - Le build d'une image
+    - Les réseaux dans docker
+    - Le stockage dans docker
+    - L'outil docker-compose
+    - La notion de registre privé et le nommage de vos images
+
+Pour celà, l'énoncé de cette se trouve à cette url : https://github.com/diranetafen/student-list
+Il est question de : 
+    - Conteneuriser une application en flask (python)
+    - Coupler une IHM afin de consommer le backend (API flask)
+    - Déployer un registre privé et uploader l'image docker dans ce registre
+    - Mettre en place une IHM pour ce registre privé.
+
+
+Partie 2 : Scan des images avec Snyk
+Cette partie vous permettra d'avoir les vulnérabilités de votre image => aspect Sécurité.
+Pour celà , vous allez utiliser l'outil snyk pour scanner vos images.
+
+    - Il faut créer une compte sur https://snyk.io/ et récupérer votre token d'accès personnel
+    - Il faut trouver un moyen de lancer le scan avec snyk (le bianire snyk est votre allié)
+        - Il serait judicieux d'utiliser un conteneur possedant directement le binaire snyk
+        - Il y'a aussi la commande docker scan ...
+
+A la fin, vous aurez mis en avant l'aspect sécurité dans docker, ainsi que la socket docker. 
+
+Partie 3 : Déploiement dans un cluster swarm
+Cette partie est une introduction à l'orchestration avec Docker swarm. Vous aller apprendre à : 
+    - Déployer un cluster swarm
+    - Lancer des services dans le cluster swarm
+    - Automatiser le lancement des services swarm à l'aide de docker-compose
+
+Pour celà, votre travail consiste à configurer un cluster swarm et déployer l'application 
+student-list (Partie 1) dans le cluster swarm à l'aide de docker-compose.
+
+1 - Mettez en place un cluster SWARM de deux VM docker (1 manager, 1worker)
+2 - Tester le fonctionnement du cluster en déployant l'image kodekloud/webapp-color
+3 - Créer une stack docker-compose pour déployer l'application de la partie 1
+

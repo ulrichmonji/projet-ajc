@@ -1,0 +1,62 @@
+version: "3"
+services:
+
+  api:
+    image: "api-image"
+    ports:
+      - "your_api_port"
+    networks:
+      - "your_network"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  api-ui:
+    depends_on:
+      - api  
+    image: "api-ui-image"
+    environment:
+      USERNAME: "your user"
+      PASSWORD: "your password"
+    volumes:
+      - "some_path_on_dockerhost":"some_path_on_containers"
+    networks:
+      - "your_network"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+  
+  registry:
+    image: "registry-image"
+    ports:
+      - "registry_external_port":"registry_internal_port"
+    networks:
+      - "your_network"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+  
+  registry-ui:
+    image: "registry-ui-image"
+    ports:
+      - "registry_ui_external_port":"registry_ui_internal_port"
+    networks:
+      - your_network
+    depends_on:
+      - registry
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+networks:
+  "your_network":

@@ -1,0 +1,41 @@
+version: '3.3'
+services:
+  api:
+    container_name: api
+    volumes:
+      - '$PWD/simple_api/student_age.json:/data/student_age.json'
+    image: 'student-list:v1'
+    networks:
+      - student        
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  website:
+    environment:
+      - 'USERNAME=toto'
+      - 'PASSWORD=python'
+    container_name: website
+    volumes:
+      - './website:/var/www/html'
+    image: 'php:apache'
+    depends_on:
+      - api
+    ports:
+      - '8000:80'
+    networks:
+      - student
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure    
+      placement:
+        constraints: [node.role == manager]          
+networks:
+  student:

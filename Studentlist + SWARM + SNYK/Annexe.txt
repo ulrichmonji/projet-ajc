@@ -1,0 +1,58 @@
+SNYK
+    - documentation : 
+        * https://docs.docker.com/engine/scan/
+        * https://hub.docker.com/r/snyk/snyk
+        * https://docs.snyk.io/products/snyk-container/snyk-cli-for-container-security
+    - Exemple d'image snyk : 
+        snyk/snyk:docker    
+    - Exemple de commande de scan: 
+        docker scan $IMAGE:$TAG
+        docker run --rm -e SNYK_TOKEN=$SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/app snyk/snyk:docker snyk test --docker $DOCKERHUB_ID/$IMAGE_NAME:$IMAGE_TAG --json
+
+DOCKER SWARM 
+
+    - Initialiser un cluster swarm 
+        docker swarm init --advertise-addr <IP MACHINE>
+
+    - Rejoindre le cluster comme worker
+        docker swarm join --token <TOKEN WORKER> <IP MACHINE>:2377
+
+    - Lister les nodes du cluster    
+        docker node ls
+
+    - Récupérer le token d'accès worker    
+        docker swarm join-token worker
+
+    - récupérer le token d'accès master
+        docker swarm join-token manager
+
+    - Creation des services et replicas
+        docker service create --name web nginx
+        docker service create --name web -p 80 -p 443 nginx
+        docker service create --replicas 2 --name web -p 80 -p 443 nginx
+        docker service update --replicas 3 web
+        docker service ls
+        docker service ps web
+
+    - Services Globaux
+    L' idée ici est d'indiquer à swarm de créer le service sur tous les nodes qu'on possède
+        docker service create --mode global --name monitor nginx
+
+    - Contraintes : on choisit sur quel node on veut exécuter la task
+        docker service create --constraint "node.labels.env == prod" --name monitor nginx
+        
+    - Suppression de Service
+        * suppression définitive
+            docker service rm web
+        * Suppression en vue d'une réutilisation
+            docker service update --replicas 0 web
+
+    - Lancer une stack docker-swarm
+        docker stack deploy -c docker-stack.yml  <your-stack>
+        docker  stack  ls
+        docker  stack  ps vote-stack
+
+    - update strategy : 
+        --update-delay :  temps qu'il prendra avant de créer le prochain container
+        --update-failure-action (pause/continue): 
+        --update-parallelism : combien de tâches on peut upgrader en parallèle

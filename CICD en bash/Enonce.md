@@ -32,7 +32,11 @@ Vous allez uploader l'image sur un registre. Vous avez le choix sur la solution 
 ### Etape 6 : Déploiement
 Etant donné deux environnements : **pré-production** et **production**, vous allez déployer votre application sur chacun de ces serveurs.
 
-Pour des besoins de facilité, le déploiement se fera sur le cloud [heroku](https://devcenter.heroku.com/).  Il vous faudra donc créer un compte sur heroku, et récupérer votre token d'accès personnal. Vous aller déclarer une variable d'environnement **HEROKU_API_KEY** qui va contenir ce token d'accès. Pour lancer les déploiements sur heroku, vous avez besoin d'installer son binaire. Pour des besoins de facilité, vous pouvez utiliser une image docker contenant déja le binaire heroku, il vous suffira juste de monter votre répertoire de travail dans ce conteneur. [Voici](rcm7/heroku-cli) un exemple d'image, qu'on pourra lancer comme ceci :
+Pour des besoins de facilité, le déploiement se fera sur le cloud [heroku](https://devcenter.heroku.com/). Il vous faudra donc créer un compte sur heroku, et récupérer votre token d'accès personnal. Vous aller déclarer une variable d'environnement **HEROKU_API_KEY** qui va contenir ce token d'accès. 
+
+Pour lancer les déploiements sur heroku, vous avez besoin d'installer son binaire. Pour des besoins de facilité, vous pouvez utiliser une image docker contenant déja le binaire heroku, il vous suffira juste de monter votre répertoire de travail dans ce conteneur. 
+
+[Voici](rcm7/heroku-cli) un exemple d'image, qu'on pourra lancer comme ceci :
     
     docker run -dit --name heroku -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker  rcm7/heroku-cli
 

@@ -184,6 +184,9 @@ Il faut à présent terminer la configuration dans l'IHM harbor en rajoutant un 
 
 Un code source est fournit avec l'énoncé, dans le dossier **monitoring**. Là dedans, se trouve un docker-compose et des fichiers de configuration.
 
+	git clone https://github.com/ulrichmonji/projet-ajc.git 
+	cd projet-ajc/monitoring/
+    docker-compose up -d 
   
 
 ### 2 - Configuration de l'export des métriques
